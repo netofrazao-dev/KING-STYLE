@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ks-black: #0a0a0a;
+  --ks-white: #f5f5f5;
+  --ks-gold: #c9a227;
+  --ks-gunmetal: #2b2e33;
+  --ks-line: #3a3a3a;
+}
+
+html,
+body {
+  background-color: var(--ks-black);
+  color: var(--ks-white);
+}
+
+/* Scrollbar sóbria, condizente com o tema escuro */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--ks-black);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ks-gunmetal);
+  border-radius: 4px;
+}
+
+.ks-heading {
+  font-family: "Bebas Neue", "Anton", sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
