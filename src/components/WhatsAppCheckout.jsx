@@ -5,17 +5,15 @@ function formatarPreco(valor) {
   return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-const CAMPOS_OBRIGATORIOS = ["nome", "telefone", "rua", "numero", "bairro", "cidade"];
+const CAMPOS_OBRIGATORIOS = ["nome", "telefone", "rua", "numero", "bairro"];
 
 const DADOS_INICIAIS = {
   nome: "",
   telefone: "",
-  cep: "",
   rua: "",
   numero: "",
   complemento: "",
   bairro: "",
-  cidade: "",
   observacoes: "",
 };
 
@@ -29,8 +27,6 @@ export function montarMensagemPedido(items, totalPreco, cliente) {
     `${cliente.rua}, ${cliente.numero}`,
     cliente.complemento,
     cliente.bairro,
-    cliente.cidade,
-    cliente.cep ? `CEP: ${cliente.cep}` : null,
   ]
     .filter(Boolean)
     .join(" - ");
@@ -226,17 +222,6 @@ export default function WhatsAppCheckout({ onFechar }) {
                 />
               </div>
 
-              <div>
-                <label className="mb-1 block text-xs uppercase tracking-widest2 text-kswhite/70">
-                  CEP
-                </label>
-                <input
-                  value={dadosCliente.cep}
-                  onChange={(e) => handleChangeCampo("cep", e.target.value)}
-                  className={inputClasse("cep")}
-                />
-              </div>
-
               <div className="flex gap-3">
                 <div className="flex-1">
                   <label className="mb-1 block text-xs uppercase tracking-widest2 text-kswhite/70">
@@ -272,27 +257,15 @@ export default function WhatsAppCheckout({ onFechar }) {
                 />
               </div>
 
-              <div className="flex gap-3">
-                <div className="flex-1">
-                  <label className="mb-1 block text-xs uppercase tracking-widest2 text-kswhite/70">
-                    Bairro *
-                  </label>
-                  <input
-                    value={dadosCliente.bairro}
-                    onChange={(e) => handleChangeCampo("bairro", e.target.value)}
-                    className={inputClasse("bairro")}
-                  />
-                </div>
-                <div className="flex-1">
-                  <label className="mb-1 block text-xs uppercase tracking-widest2 text-kswhite/70">
-                    Cidade *
-                  </label>
-                  <input
-                    value={dadosCliente.cidade}
-                    onChange={(e) => handleChangeCampo("cidade", e.target.value)}
-                    className={inputClasse("cidade")}
-                  />
-                </div>
+              <div>
+                <label className="mb-1 block text-xs uppercase tracking-widest2 text-kswhite/70">
+                  Bairro *
+                </label>
+                <input
+                  value={dadosCliente.bairro}
+                  onChange={(e) => handleChangeCampo("bairro", e.target.value)}
+                  className={inputClasse("bairro")}
+                />
               </div>
 
               <div>

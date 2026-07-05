@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 44" fill="none">
+  <defs>
+    <linearGradient id="ksGoldGradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E4C766" />
+      <stop offset="100%" stop-color="#C9A227" />
+    </linearGradient>
+  </defs>
+
+  <!-- Coroa (ícone da marca) -->
+  <g transform="translate(0,6)">
+    <path
+      d="M2,32 L2,15 L11,23 L21,4 L31,23 L40,15 L40,32 Z"
+      fill="url(#ksGoldGradient)"
+    />
+    <circle cx="2" cy="15" r="3.2" fill="#E4C766" />
+    <circle cx="21" cy="4" r="3.4" fill="#E4C766" />
+    <circle cx="40" cy="15" r="3.2" fill="#E4C766" />
+  </g>
+
+  <!-- Wordmark -->
+  <text
+    x="52"
+    y="30"
+    font-family="Impact, 'Arial Narrow Bold', 'Haettenschweiler', sans-serif"
+    font-weight="700"
+    font-size="26"
+    letter-spacing="2"
+  >
+    <tspan fill="#F5F5F5">KING </tspan><tspan fill="url(#ksGoldGradient)">STYLE</tspan>
+  </text>
+</svg>

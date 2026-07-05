@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import CartDrawer from "./CartDrawer";
+import logo from "../assets/logo.svg";
 
 export default function Header() {
   const { totalItens } = useCart();
@@ -11,8 +12,8 @@ export default function Header() {
     <>
       <header className="sticky top-0 z-40 border-b border-ksline bg-ksblack/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <Link to="/" className="ks-heading text-2xl text-kswhite">
-            KING <span className="text-ksgold">STYLE</span>
+          <Link to="/" className="flex items-center">
+            <img src={logo} alt="King Style" className="h-8 sm:h-10" />
           </Link>
 
           <button
