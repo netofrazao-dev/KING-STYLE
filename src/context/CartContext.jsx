@@ -1,125 +1,81 @@
 import { createContext, useContext, useEffect, useMemo, useReducer } from "react";
 
 const CartContext = createContext(null);
-const STORAGE_KEY = "king-style-cart";
+const STORAGE_KEY = "king-style-cart-v2";
 
-// Cada item é identificado pela combinação produto+tamanho,
-// pois o mesmo produto pode estar no carrinho em tamanhos diferentes.
-function buildItemKey(productId, tamanho) {
-  return `${productId}::${tamanho}`;
+// Cada item é a combinação produto + variação (cor/tamanho).
+export function chaveItem(productId, variantId, tamanho, cor) {
+  return `${productId}::${variantId || `${cor || ""}|${tamanho || ""}`}`;
 }
 
-function loadInitialState() {
+function carregar() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch (error) {
-    console.error("Erro ao carregar carrinho salvo:", error);
+    const itens = raw ? JSON.parse(raw) : [];
+    return Array.isArray(itens) ? itens : [];
+  } catch {
     return [];
   }
 }
 
-function cartReducer(state, action) {
-  switch (action.type) {
-    case "ADD_ITEM": {
-      const { produto, tamanho, quantidade } = action.payload;
-      const key = buildItemKey(produto.id, tamanho);
-      const existente = state.find((item) => item.key === key);
+const limitar = (qtd, estoque) => Math.max(0, Math.min(qtd, estoque ?? 99, 99));
 
+function reducer(state, action) {
+  switch (action.type) {
+    case "ADD": {
+      const it = action.item;
+      const existente = state.find((i) => i.key === it.key);
       if (existente) {
-        return state.map((item) =>
-          item.key === key
-            ? { ...item, quantidade: item.quantidade + quantidade }
-            : item
+        return state.map((i) =>
+          i.key === it.key ? { ...i, ...it, quantidade: limitar(i.quantidade + it.quantidade, it.estoque) } : i
         );
       }
-
-      return [
-        ...state,
-        {
-          key,
-          productId: produto.id,
-          nome: produto.nome,
-          preco: produto.preco,
-          imagem: produto.imagens?.[0] ?? null,
-          tamanho,
-          quantidade,
-        },
-      ];
+      return [...state, { ...it, quantidade: limitar(it.quantidade, it.estoque) }];
     }
-
-    case "REMOVE_ITEM":
-      return state.filter((item) => item.key !== action.payload.key);
-
-    case "UPDATE_QUANTITY":
+    case "QTD":
       return state
-        .map((item) =>
-          item.key === action.payload.key
-            ? { ...item, quantidade: action.payload.quantidade }
-            : item
-        )
-        .filter((item) => item.quantidade > 0);
-
-    case "CLEAR_CART":
+        .map((i) => (i.key === action.key ? { ...i, quantidade: limitar(action.quantidade, i.estoque) } : i))
+        .filter((i) => i.quantidade > 0);
+    case "REMOVE":
+      return state.filter((i) => i.key !== action.key);
+    case "CLEAR":
       return [];
-
     default:
       return state;
   }
 }
 
 export function CartProvider({ children }) {
-  const [items, dispatch] = useReducer(cartReducer, undefined, loadInitialState);
+  const [items, dispatch] = useReducer(reducer, undefined, carregar);
 
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    } catch (error) {
-      console.error("Erro ao salvar carrinho:", error);
+      localStorage.removeItem("king-style-cart"); // formato antigo
+    } catch {
+      /* modo privado */
     }
   }, [items]);
 
-  const addItem = (produto, tamanho, quantidade = 1) => {
-    if (!tamanho) {
-      throw new Error("Selecione um tamanho antes de adicionar ao carrinho.");
-    }
-    dispatch({ type: "ADD_ITEM", payload: { produto, tamanho, quantidade } });
-  };
-
-  const removeItem = (key) => dispatch({ type: "REMOVE_ITEM", payload: { key } });
-
-  const updateQuantity = (key, quantidade) =>
-    dispatch({ type: "UPDATE_QUANTITY", payload: { key, quantidade } });
-
-  const clearCart = () => dispatch({ type: "CLEAR_CART" });
-
-  const totalItens = useMemo(
-    () => items.reduce((soma, item) => soma + item.quantidade, 0),
-    [items]
-  );
-
-  const totalPreco = useMemo(
-    () => items.reduce((soma, item) => soma + item.preco * item.quantidade, 0),
-    [items]
-  );
-
-  const value = {
-    items,
-    addItem,
-    removeItem,
-    updateQuantity,
-    clearCart,
-    totalItens,
-    totalPreco,
-  };
+  const value = useMemo(() => {
+    const totalItens = items.reduce((s, i) => s + i.quantidade, 0);
+    const totalPreco = items.reduce((s, i) => s + i.preco * i.quantidade, 0);
+    return {
+      items,
+      totalItens,
+      totalPreco,
+      addItem: (item) => dispatch({ type: "ADD", item: { ...item, key: chaveItem(item.productId, item.variantId, item.tamanho, item.cor) } }),
+      updateQuantity: (key, quantidade) => dispatch({ type: "QTD", key, quantidade }),
+      removeItem: (key) => dispatch({ type: "REMOVE", key }),
+      clearCart: () => dispatch({ type: "CLEAR" }),
+    };
+  }, [items]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
 export function useCart() {
-  const context = useContext(CartContext);
-  if (!context) {
-    throw new Error("useCart deve ser usado dentro de um <CartProvider>.");
-  }
-  return context;
+  const ctx = useContext(CartContext);
+  if (!ctx) throw new Error("useCart deve ser usado dentro de um <CartProvider>.");
+  return ctx;
 }

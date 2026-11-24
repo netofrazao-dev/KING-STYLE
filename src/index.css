@@ -8,28 +8,54 @@
   --ks-gold: #c9a227;
   --ks-gunmetal: #2b2e33;
   --ks-line: #3a3a3a;
+  color-scheme: dark;
 }
 
 html,
 body {
   background-color: var(--ks-black);
   color: var(--ks-white);
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Scrollbar sóbria, condizente com o tema escuro */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--ks-black);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--ks-gunmetal);
-  border-radius: 4px;
-}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--ks-black); }
+::-webkit-scrollbar-thumb { background: var(--ks-gunmetal); border-radius: 4px; }
 
 .ks-heading {
-  font-family: "Bebas Neue", "Anton", sans-serif;
-  letter-spacing: 0.08em;
+  font-family: "Bebas Neue", "Anton", Impact, sans-serif;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  font-weight: 400;
+}
+
+:focus-visible { outline: 2px solid var(--ks-gold); outline-offset: 2px; }
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-gold { @apply btn bg-ksgold text-ksblack hover:bg-ksgoldlight; }
+  .btn-outline { @apply btn border border-ksline text-kswhite hover:border-ksgold hover:text-ksgold; }
+  .btn-ghost { @apply btn text-kswhite/70 hover:bg-white/5 hover:text-kswhite; }
+  .btn-danger { @apply btn bg-red-600 text-white hover:bg-red-500; }
+  .btn-sm { @apply px-3 py-1.5 text-xs; }
+  .icon-btn { @apply inline-flex h-9 w-9 items-center justify-center rounded-lg text-kswhite/70 transition hover:bg-white/5 hover:text-kswhite disabled:opacity-40; }
+
+  .label { @apply mb-1.5 block text-xs font-semibold uppercase tracking-wider text-kswhite/60; }
+  .input {
+    @apply w-full rounded-lg border border-ksline bg-ksblack px-3 py-2.5 text-base text-kswhite outline-none transition placeholder:text-kswhite/30 focus:border-ksgold sm:text-sm;
+  }
+  .input-erro { @apply border-red-500; }
+  .card { @apply rounded-xl border border-ksline bg-[#121315]; }
+  .chip { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider; }
+}
+
+@keyframes ksIn { from { opacity: 0; transform: translateY(-6px); } }
+@keyframes ksUp { from { opacity: 0; transform: translateY(16px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
